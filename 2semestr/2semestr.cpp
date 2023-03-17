@@ -7,11 +7,26 @@
 //bool insert(int key) – вставка элемента;
 //bool contains(int key) - проверка наличия элемента;
 //bool erase(int key) – удаление элемента;
+
+//     1 блок
+//1. создать дерево
+//2. рассчитать  среднее время...
+//3. задание по варианту
+//     2.1 блок
+//1. добавить узел
+//2. удалить узел
+//3. печать дерева
+//4. найти элемент
+//     2.2 блок
+//расчитать время
+//     2.3 блок
+//создание вектора и дерева
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
 #include <locale.h>
 #include <iostream>
+#include <conio.h>
 using namespace std;
 struct Leaf {
     int data;
@@ -51,17 +66,12 @@ private:
     }
     void print_leaf(const std::string& prefix, const Leaf* node, bool isLeft)
     {
-        if (node)
+        if (node != nullptr)
         {
             std::cout << prefix;
+            std::cout << (isLeft ? "ГДД" : "АДД");
 
-            //std::cout << (isLeft ? "├──" : "└──");
-            std::cout << (isLeft ? "|: " : "|: ");
-
-            // print the value of the node
             std::cout << node->data << std::endl;
-
-            // enter the next tree level - left and right branch
             print_leaf(prefix + (isLeft ? "|   " : "    "), node->left, true);
             print_leaf(prefix + (isLeft ? "|   " : "    "), node->right, false);
         }
@@ -78,13 +88,23 @@ private:
         else if (val > head->data)
             erase_leaf(head->right, val);
         else {
-            if (!head->left) {
-                Leaf* leaf = head->right;
+            if (!head->left && !head->right) 
+            {
+                delete head;
+                head = NULL;
+                return true;
+            }
+            else if (!head->left) 
+            {
+                Leaf* leaf = head;
+                head = head->right;
                 delete head;
                 return true;
             }
-            else if (!head->right) {
-                Leaf* leaf = head->left;
+            else if (!head->right) 
+            {
+                Leaf* leaf = head;
+                head = head->left;
                 delete head;
                 return true;
             }
@@ -94,14 +114,14 @@ private:
             return true;
         }
     }
-    void clear(Leaf*& head) //+
+    void clear(Leaf*& head) 
     {
         if (!head) return;
         clear(head->left);
         clear(head->right);
         delete head;
     }
-    void copy(Leaf* a, const Leaf* b) //+
+    void copy(Leaf* a, const Leaf* b) 
     {
         if (!a)
         {
@@ -114,13 +134,13 @@ private:
         copy(a->right, b->right);
     }
 public:
-    Tree(); //+
-    Tree(const Tree&); //+
-    ~Tree();//+
-    bool insert(int);//+
-    bool contains(int x); //+
-    bool erase(int x); //+
-    void print(); //+
+    Tree(); 
+    Tree(const Tree&);
+    ~Tree();
+    bool insert(int);
+    bool contains(int x); 
+    bool erase(int x); 
+    void print(); 
     Tree& operator=(const Tree& src);
 };
 Tree::Tree() :root(NULL) {}
@@ -131,24 +151,24 @@ Tree& Tree::operator=(const Tree& tmp)
     copy(root, tmp.root);
     return *this;
 }
-Tree::Tree(const Tree& a)//+
+Tree::Tree(const Tree& a)
 {
     copy(root, a.root);
 }
-bool Tree::insert(int x) //+
+bool Tree::insert(int x)
 {
     return insert_leaf(root, x);
 }
-Tree::~Tree() //+
+Tree::~Tree()
 {
     clear(root);
 }
-void Tree::print() //+
+void Tree::print()
 {
     print_leaf("", root, false);
     cout << endl;
 }
-bool Tree::contains(int x) //+
+bool Tree::contains(int x)
 {
     return contains_leaf(root, x);
 }
@@ -156,18 +176,100 @@ bool Tree::erase(int x) {
     if (contains(x) == true) return false;
     return erase_leaf(root, x);
 }
-
+void menu1()
+{
+    cout << "1. Create a binary search tree" << endl;
+    cout << "2. Сalculate the average time" << endl;
+    cout << "3. Make a task according to the option" << endl;
+    cout << "4. Finish the program" << endl;
+    cout << "choice: " << endl;
+}
+void menu2_1()
+{
+    cout << "1. add a node" << endl;
+    cout << "2. delete a node" << endl;
+    cout << "3. print a binary tree " << endl;
+    cout << "4. find the specified node " << endl;
+    cout << "5. back main menu " << endl;
+    cout << "choice: " << endl;
+}
+void menu2_3()
+{
+    cout << "1. Create binary search tree" << endl;
+    cout << "2. Сalculate the average time" << endl;
+    cout << "3. Make a task according to the option" << endl;
+    cout << "choice: " << endl;
+}
 
 int main() {
-    Tree t;
-    int choise = 0;
-
-    t.insert(20);
-    t.insert(24);
-    t.insert(19);
-    t.insert(21);
-    t.insert(18);
-    t.insert(22);
-    t.print();
-    return 0;
+    Tree head;
+    int choice = 0, ch = 0, choi = 0, val = 0;
+    bool flag1 = true, flag2 = true;
+    while (flag1)
+    {
+        menu1();
+        cin >> choice;
+        if (choice == 1)
+        {
+            flag2 = true;
+            while (flag2)
+            {
+                menu2_1();
+                cin >> ch;
+                if (ch == 1)
+                {
+                    cout << "value: ";
+                    cin >> val;
+                    if (head.insert(val)) cout << "value added successfully" << endl;
+                    else cout << "this value is already in the tree" << endl;
+                    cout << endl << "Press 'Backspace' if want to back" << endl << endl;
+                    choi = _getch();
+                    if (choi == 8) flag2 = true;
+                }
+                else if (ch == 2)
+                {
+                    cout << "value: ";
+                    cin >> val;
+                    if (head.erase(val)) cout << "value deleted successfully" << endl;
+                    else cout << "there is no such value in the tree" << endl;
+                    cout << endl << "Press 'Backspace' if want to back" << endl << endl;
+                    choi = _getch();
+                    if (choi == 8) flag2 = true;
+                }
+                else if (ch == 3)
+                {
+                    head.print();
+                    cout << endl << "Press 'Backspace' if want to back" << endl << endl;
+                    choi = _getch();
+                    if (choi == 8) flag2 = true;
+                }
+                else if (ch == 4)
+                {
+                    cout << "value: ";
+                    cin >> val;
+                    if (head.contains(val)) cout << "this element is present in the tree" << endl;
+                    else cout << "this element is not present in the tree" << endl;
+                    cout << endl << "Press 'Backspace' if want to back" << endl << endl;
+                    choi = _getch();
+                    if (choi == 8) flag2 = true;
+                }
+                else if (ch == 5) 
+                {
+                    flag2 = false;
+                }
+                else
+                {
+                    cout << "invalid character entered!!!!!!!    try again" << endl;
+                }
+            }
+        }
+        if (choice == 2) { cout << 1; }
+        if (choice == 3) { cout << 2; }
+        if (choice == 4) return 0;
+        else
+        {
+            cout << "invalid character entered!!!!!!!    try again" << endl;
+        }
+    }
 }
+//поправить удаление, печать
