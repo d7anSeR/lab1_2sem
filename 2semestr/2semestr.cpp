@@ -27,6 +27,8 @@
 #include <locale.h>
 #include <iostream>
 #include <conio.h>
+#include <vector>
+
 using namespace std;
 struct Leaf {
     int data;
@@ -178,32 +180,43 @@ bool Tree::erase(int x) {
 }
 void menu1()
 {
+    system("cls");
     cout << "1. Create a binary search tree" << endl;
-    cout << "2. Сalculate the average time" << endl;
+    cout << "2. Calculate the average time" << endl;
     cout << "3. Make a task according to the option" << endl;
     cout << "4. Finish the program" << endl;
-    cout << "choice: " << endl;
+    cout << "choice: ";
 }
 void menu2_1()
 {
+    system("cls");
     cout << "1. add a node" << endl;
     cout << "2. delete a node" << endl;
     cout << "3. print a binary tree " << endl;
     cout << "4. find the specified node " << endl;
     cout << "5. back main menu " << endl;
-    cout << "choice: " << endl;
+    cout << "choice: ";
 }
 void menu2_3()
 {
     cout << "1. Create binary search tree" << endl;
     cout << "2. Сalculate the average time" << endl;
     cout << "3. Make a task according to the option" << endl;
-    cout << "choice: " << endl;
+    cout << "choice: ";
 }
-
+bool find_elem(std:: vector<int>& vec, int elem)
+{
+    for (int i = 0; i < vec.size(); i++)
+    {
+        if (vec[i] == elem)
+            return true;
+    }
+    return false;
+}
 int main() {
     Tree head;
     int choice = 0, ch = 0, choi = 0, val = 0;
+
     bool flag1 = true, flag2 = true;
     while (flag1)
     {
@@ -260,15 +273,45 @@ int main() {
                 else
                 {
                     cout << "invalid character entered!!!!!!!    try again" << endl;
+                    cout << endl<< endl << "Press 'Backspace' if want to back" << endl << endl;
+                    choi = _getch();
+                    if (choi == 8) flag2 = true;
                 }
             }
         }
         if (choice == 2) { cout << 1; }
-        if (choice == 3) { cout << 2; }
+        if (choice == 3) 
+        {
+            std::vector<int> myVector = {1, -3, 2, 7, 11, 63, 99, 2, 0, 7, 1, -2, 99, 88, 73, -42, -2, -2, -3, 19, 0};
+            std::vector<int> new_vector;
+            cout << "vector: ";
+            for (int i = 0; i < 21; i++)
+            {
+                if (head.insert(myVector[i]) == false && find_elem(new_vector, myVector[i]) == false)
+                {
+                    new_vector.push_back(myVector[i]);
+                }
+                cout << myVector[i] << "; ";
+            }
+            cout << endl;
+            cout << "new vector: ";
+            for (int i = 0; i < new_vector.size(); i++)
+            {
+                cout << new_vector[i] << "; ";
+            }
+            cout << endl;
+            cout << endl << "Press 'Backspace' if want to back" << endl << endl;
+            choi = _getch();
+            if (choi == 8) flag1 = true;
+
+        }
         if (choice == 4) return 0;
-        else
+        else if(choice != 1 && choice != 2 && choice != 3 && choice != 4)
         {
             cout << "invalid character entered!!!!!!!    try again" << endl;
+            cout << endl << endl << "Press 'Backspace' if want to back" << endl << endl;
+            choi = _getch();
+            if (choi == 8) flag1 = true;
         }
     }
 }
