@@ -43,11 +43,12 @@ private:
             return true;
         }
         else if (val < head->data)
-            insert_leaf(head->left, val);
+            return insert_leaf(head->left, val);
         else if (val > head->data)
-            insert_leaf(head->right, val);
+            return insert_leaf(head->right, val);
         else
             return false;
+
     }
     bool contains_leaf(const Leaf* head, int val)
     {
