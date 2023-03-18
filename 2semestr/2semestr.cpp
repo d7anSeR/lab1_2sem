@@ -1,26 +1,16 @@
-﻿//Класс должен предоставлять, как минимум, следующие функции :
-//
-//конструктор копирования;
-//деструктор;
-//оператор присваивания;
-//void print() – печать содержимого;
-//bool insert(int key) – вставка элемента;
-//bool contains(int key) - проверка наличия элемента;
-//bool erase(int key) – удаление элемента;
-
-//     1 блок
-//1. создать дерево
+﻿//     1 блок
+//1. создать дерево+
 //2. рассчитать  среднее время...
-//3. задание по варианту
+//3. задание по варианту+
 //     2.1 блок
-//1. добавить узел
-//2. удалить узел
-//3. печать дерева
-//4. найти элемент
+//1. добавить узел+
+//2. удалить узел+
+//3. печать дерева+
+//4. найти элемент+
 //     2.2 блок
 //расчитать время
 //     2.3 блок
-//создание вектора и дерева
+//создание вектора и дерева+
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
@@ -28,7 +18,11 @@
 #include <iostream>
 #include <conio.h>
 #include <vector>
-
+#include <algorithm>
+#include <chrono>
+#include <iostream>
+#include<vector>
+using namespace std::chrono;
 using namespace std;
 struct Leaf {
     int data;
@@ -83,38 +77,32 @@ private:
         while (head->left) head = head->left;
         return head;
     }
-    bool erase_leaf(Leaf* head, int val) {
-        if (!head) return false;
-        if (val < head->data)
-            erase_leaf(head->left, val);
-        else if (val > head->data)
-            erase_leaf(head->right, val);
+    Leaf* erase_leaf(Leaf* head, int val) {
+        if (!head) return head;
+        else if (val < head->data) head->left = erase_leaf(head->left, val);
+        else if (val > head->data) head->right = erase_leaf(head->right, val);
         else {
-            if (!head->left && !head->right) 
-            {
+            if (!head->left && !head->right) {
                 delete head;
                 head = NULL;
-                return true;
             }
-            else if (!head->left) 
-            {
-                Leaf* leaf = head;
+            else if (!head->left) {
+                Leaf* tmp = head;
                 head = head->right;
-                delete head;
-                return true;
+                delete tmp;
             }
-            else if (!head->right) 
-            {
-                Leaf* leaf = head;
+            else if (!head->right) {
+                Leaf* tmp = head;
                 head = head->left;
-                delete head;
-                return true;
+                delete tmp;
             }
-            Leaf* leaf = minimum(head->right);
-            head->data = leaf->data;
-            erase_leaf(head->right, leaf->data);
-            return true;
+            else {
+                Leaf* tmp = minimum(head->right);
+                head->data = tmp->data;
+                head->right = erase_leaf(head->right, tmp->data);
+            }
         }
+        return head;
     }
     void clear(Leaf*& head) 
     {
@@ -175,8 +163,9 @@ bool Tree::contains(int x)
     return contains_leaf(root, x);
 }
 bool Tree::erase(int x) {
-    if (contains(x) == true) return false;
-    return erase_leaf(root, x);
+    if (!contains(x)) return false;
+    root = erase_leaf(root, x);
+    return true;
 }
 void menu1()
 {
@@ -204,7 +193,7 @@ void menu2_3()
     cout << "3. Make a task according to the option" << endl;
     cout << "choice: ";
 }
-bool find_elem(std:: vector<int>& vec, int elem)
+bool find_elem(std::vector<int>& vec, int elem)
 {
     for (int i = 0; i < vec.size(); i++)
     {
@@ -213,6 +202,164 @@ bool find_elem(std:: vector<int>& vec, int elem)
     }
     return false;
 }
+size_t lcg() {
+    static size_t x = 0;
+    x = (1021 * x + 24631) % 116640;
+    return x;
+}
+void fill_tree(int n, int cycles)
+{
+    double result = 0;
+    for (int i = 0; i < cycles; i++)
+    {
+        Tree test;
+        auto start = high_resolution_clock::now();
+        for (int j = 0; j < n; j++)
+        {
+            test.insert(lcg());
+        }
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<microseconds>(stop - start);
+        result += duration.count();
+    }
+    cout << "filling of binary tree: with " << n << " values and " << cycles << " cycles - " << result / cycles << " microseconds" << endl;
+}
+
+void contains_tree(int n, int cycles)
+{
+    Tree test;
+    for (int i = 0; i < n; i++)
+    {
+        test.insert(lcg());
+    }
+    long double result = 0;
+    for (int j = 0; j < cycles; j++)
+    {
+        auto start = high_resolution_clock::now();
+        test.contains(lcg());
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<nanoseconds>(stop - start);
+        result += duration.count();
+    }
+    cout << "searching in binary tree: with " << n << " values and " << cycles << " cycles - " << result / cycles << " nanoseconds" << endl;
+}
+
+void insert_tree(int n, int cycles)
+{
+    Tree test;
+    for (int i = 0; i < n; i++)
+    {
+        test.insert(lcg());
+    }
+    double result = 0;
+    for (int j = 0; j < cycles; j++)
+    {
+        Tree tmp = test;
+        auto start = high_resolution_clock::now();
+        tmp.insert(lcg());
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<nanoseconds>(stop - start);
+        result += duration.count();
+    }
+    cout << "addition in binary tree: with " << n << " values and " << cycles << " cycles - " << result / cycles << " nanoseconds" << endl;
+}
+void erase_tree(int n, int cycles)
+{
+    Tree test;
+    for (int i = 0; i < n; i++)
+    {
+        test.insert(lcg());
+    }
+    double result = 0;
+    for (int j = 0; j < cycles; j++)
+    {
+        Tree tmp = test;
+        auto start = high_resolution_clock::now();
+        tmp.erase(lcg());
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<nanoseconds>(stop - start);
+        result += duration.count();
+    }
+    cout << "deleting in binary tree: with " << n << " values and " << cycles << " cycles - " << result / cycles << " nanoseconds" << endl;
+}
+void fill_vector(int n, int cycles)
+{
+    double result = 0;
+    for (int j = 0; j < cycles; j++)
+    {
+        std::vector<int> test(n);
+        auto start = high_resolution_clock::now();
+        for (int i = 0; i < n; i++)
+        {
+            test.push_back(lcg());
+        }
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<microseconds>(stop - start);
+        result += duration.count();
+    }
+    cout << "filling of vector: with " << n << " values and " << cycles << " cycles - " << result / cycles << " microseconds" << endl;
+}
+
+void contains_vector(int n, int cycles)
+{
+    std::vector<int> test(n);
+    for (int i = 0; i < n; i++)
+    {
+        test.push_back(lcg());
+    }
+    long double result = 0;
+    for (int j = 0; j < cycles; j++)
+    {
+        auto start = high_resolution_clock::now();
+        std::find(test.begin(), test.end(), lcg());
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<nanoseconds>(stop - start);
+        result += duration.count();
+    }
+    cout << "searching in vector: with " << n << " values and " << cycles << " cycles - " << result / cycles << " nanoseconds" << endl;
+}
+
+void insert_vector(int n, int cycles)
+{
+    std::vector<int> test(n);
+    for (int i = 0; i < n; i++)
+    {
+        test.push_back(lcg());
+    }
+    double result = 0;
+    for (int j = 0; j < cycles; j++)
+    {
+        std::vector<int> tmp = test;
+        auto start = high_resolution_clock::now();
+        tmp.push_back(lcg());
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<nanoseconds>(stop - start);
+        result += duration.count();
+    }
+    cout << "addition in vector: with " << n << " values and " << cycles << " cycles - " << result / cycles << " nanoseconds" << endl;
+}
+
+void erase_vector(int n, int cycles)
+{
+    std::vector<int> test(n);
+    for (int i = 0; i < n; i++)
+    {
+        test.push_back(lcg());
+    }
+    double result = 0;
+    for (int j = 0; j < cycles; j++)
+    {
+        std::vector<int> tmp = test;
+        auto start = high_resolution_clock::now();
+        tmp.erase(std::remove(tmp.begin(), tmp.end(), lcg()), tmp.end());
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<nanoseconds>(stop - start);
+        result += duration.count();
+    }
+    cout << "deleting in vector: with " << n << " values and " << cycles << " cycles - " << result / cycles << " nanoseconds" << endl;
+}
+
+
 int main() {
     Tree head;
     int choice = 0, ch = 0, choi = 0, val = 0;
@@ -279,7 +426,48 @@ int main() {
                 }
             }
         }
-        if (choice == 2) { cout << 1; }
+        if (choice == 2) 
+        {
+            fill_tree(1000, 100);
+            fill_tree(10000, 100);
+            fill_tree(100000, 100);
+            cout << endl;
+            fill_vector(1000, 100);
+            fill_vector(10000, 100);
+            fill_vector(100000, 100);
+            cout << endl;
+            cout << endl;
+            contains_tree(1000, 1000);
+            contains_tree(10000, 1000);
+            contains_tree(100000, 1000);
+            cout << endl;
+            contains_vector(1000, 1000);
+            contains_vector(10000, 1000);
+            contains_vector(100000, 1000);
+            cout << endl;
+            cout << endl;
+            insert_tree(1000, 1000);
+            insert_tree(10000, 1000);
+            insert_tree(100000, 1000);
+            cout << endl;
+            insert_vector(1000, 1000);
+            insert_vector(10000, 1000);
+            insert_vector(100000, 1000);
+            cout << endl;
+            cout << endl;
+            erase_tree(1000, 1000);
+            erase_tree(10000, 1000);
+            erase_tree(100000, 1000);
+            cout << endl;
+            erase_vector(1000, 1000);
+            erase_vector(10000, 1000);
+            erase_vector(100000, 1000);
+            cout << endl << endl;
+            cout << endl << "Press 'Backspace' if want to back" << endl << endl;
+            choi = _getch();
+            if (choi == 8) flag1 = true;
+
+        }
         if (choice == 3) 
         {
             std::vector<int> myVector = {1, -3, 2, 7, 11, 63, 99, 2, 0, 7, 1, -2, 99, 88, 73, -42, -2, -2, -3, 19, 0};
@@ -315,4 +503,3 @@ int main() {
         }
     }
 }
-//поправить удаление, печать
