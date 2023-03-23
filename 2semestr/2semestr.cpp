@@ -471,10 +471,10 @@ int main() {
         }
         if (choice == 3) 
         {
-            std::vector<int> myVector = {1, -3, 2, 7, 11, 63, 99, 2, 0, 7, 1, -2, 99, 88, 73, -42, -2, -2, -3, 19, 0};
+            std::vector<int> myVector = {1, -3, 2, 7, 11, 63, 99, 2, 0,0, 7, 1, -2, 99, 88, 73, -42, -2, -2, -3, 19, 0};
             std::vector<int> new_vector;
             cout << "vector: ";
-            for (int i = 0; i < 21; i++)
+            for (int i = 0; i < 22; i++)
             {
                 if (head.insert(myVector[i]) == false && find_elem(new_vector, myVector[i]) == false)
                 {
