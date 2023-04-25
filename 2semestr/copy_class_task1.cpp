@@ -35,14 +35,7 @@ private:
             return insert_leaf(head->right, val);
         else if (head->data == val)
         {
-            if (head->left == NULL)
-            {
-                head->left = new Leaf;
-                head->left->data = val;
-                head->left->left = head->left->right = NULL;
-                return true;
-            }
-
+            
             if (head->right == NULL)
             {
                 head->right = new Leaf;
